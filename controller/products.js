@@ -1,4 +1,6 @@
 const Product = require('../model/productModel');
+const Multer = require('multer')
+const Upload = Multer({ dest: 'uploads/' })
 
 exports.getAllProducts = async (req, res, next) => {
     const products = await Product.find({ createdBy: req.user.id })

@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 
 
 const productSchema = new Schema({
+
+    image: {
+        type: { type: String }
+    },
+
     category: { 
         type: String, 
         required: true,
