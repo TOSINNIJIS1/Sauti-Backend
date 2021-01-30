@@ -1,10 +1,17 @@
 const Product = require('../model/productModel');
-const Multer = require('multer')
-const Upload = Multer({ dest: 'uploads/' })
+
+
+exports.upload = 
 
 exports.getAllProducts = async (req, res, next) => {
-    const products = await Product.find({ createdBy: req.user.id })
-    res.status(200).json(products)
+    try {
+        const products = await Product.find({ createdBy: req.user.id })
+        res.status(200).json(products)
+    } catch (error) {
+        error.status = 400; 
+        next(error)
+    }
+    
 }
 
 exports.postProduct = async (req, res, next) => {

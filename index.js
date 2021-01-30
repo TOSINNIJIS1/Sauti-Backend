@@ -13,6 +13,7 @@ app.use(Cors());
 
 // Token 
 app.use('/api/protected', auth, (req, res) => {
+    
     res.end(`Hi ${req.user.fname}, you are authenticated!`)
 });
 
