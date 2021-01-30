@@ -11,6 +11,7 @@ exports.getAllProducts = async (req, res, next) => {
     
 }
 
+
 exports.postProduct = async (req, res, next) => {
     const newProduct = new Product(req.body);
     newProduct.createdBy = req.user.id;
