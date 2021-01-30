@@ -37,6 +37,7 @@ app.use((err, req, res, next) => {
     res.status(status).json({error: { message: err.message }})
 });
 
+const PORT = process.env.PORT || '8080'
 mongoose.connect(MONGODB, {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -44,7 +45,7 @@ mongoose.connect(MONGODB, {
 })
 .then(() => {
     console.log('Database Connected')
-    return app.listen(process.env.PORT || 1000)
+    return app.listen(PORT)
 })
 .then(() => console.log('Server running on port 1000'))
 .catch((err) => console.log(err))
