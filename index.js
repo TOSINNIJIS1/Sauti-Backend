@@ -21,7 +21,10 @@ app.use('/api/products', auth, productRoute);
 
 app.use('/api/users', userRoute);
 
+app.use('/', userRoute)
+
 // When no route match
+
 
 app.use((req, res, next) => {
     const err = new Error('not found');
@@ -40,8 +43,9 @@ mongoose.connect(MONGODB, {
     useUnifiedTopology: true, 
 })
 .then(() => {
-    console.log('Database Connected');
+    console.log('Database Connected')
     return app.listen(process.env.PORT || 1000)
 })
 .then(() => console.log('Server running on port 1000'))
 .catch((err) => console.log(err))
+

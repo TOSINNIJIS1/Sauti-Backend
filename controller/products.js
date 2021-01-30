@@ -1,8 +1,5 @@
 const Product = require('../model/productModel');
 
-
-exports.upload = 
-
 exports.getAllProducts = async (req, res, next) => {
     try {
         const products = await Product.find({ createdBy: req.user.id })
