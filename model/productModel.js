@@ -5,35 +5,39 @@ const Schema = mongoose.Schema;
 const productSchema = new Schema({
 
     image: {
-        type: { type: String }
+        type: String,
+        // required: false
     },
-
+    
     category: { 
         type: String, 
-        required: true,
-        enum: ['Animal Products', 'Beans', 'Cereal', 'Fruits', 'Vegetables', 'Seeds & Nuts', 'Other', 'Peas', 'Roots & Tubers', 'Cereals']
+        // required: true,
+        // enum: ['Animal Products', 'Beans', 'Fruits', 'Vegetables', 'Seeds & Nuts', 'Other', 'Peas', 'Roots & Tubers', 'Cereals', 'Clothes', 'Shoes', 'Jewelries', 'Shirt']
     },
-
     item: {
         type: String,
-        requred: true,
+        // required: true
     },
+
     price: {
         type: String,
-        requred: true,
+        // required: true,
     },
     location: {
         type: String,
-        requred: true,
+        // required: true,
     },
+    
     description: {
         type: String,
-        requred: true,
+        // required: true,
     },
 
     createdBy: { type: Schema.Types.ObjectId, ref: 'User'},
     createdOn: { type: Date, default: Date.now }
     
 })
+
+
 
 module.exports = mongoose.model('Product', productSchema)

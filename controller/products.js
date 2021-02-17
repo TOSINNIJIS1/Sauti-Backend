@@ -2,8 +2,13 @@ const Product = require('../model/productModel');
 
 exports.getAllProducts = async (req, res, next) => {
     try {
-        const products = await Product.find({ createdBy: req.user.id })
-        res.status(200).json(products)
+        const products = await Product.find()
+        if (products) {
+            res.status(200).json({products, message: "Products found"})
+        } else if (!products) {
+            res.status(200).json({message: 'No Product Found'})
+        }
+
     } catch (error) {
         error.status = 400; 
         next(error)
@@ -12,23 +17,13 @@ exports.getAllProducts = async (req, res, next) => {
 }
 
 
-exports.postProduct = async (req, res, next) => {
-    const newProduct = new Product(req.body);
-    newProduct.createdBy = req.user.id;
+// Starts here
 
-    try {
-        const product = await newProduct.save();
-        res.status(201).json(product);
-    } catch (error) {
-        error.status = 400;
-        next(error);
-    }
-};
 
 exports.getProduct = async (req, res, next) => {
-    const { productId } = req.params;
+    const {id}  = req.params;
     try {
-        const product = await Product.findById(productId);
+        const product = await Product.findById(id);
         res.status(200).json(product);
     } catch (error) {
         error.status = 400;
@@ -36,17 +31,11 @@ exports.getProduct = async (req, res, next) => {
     }
 }
 
-
 exports.updateProduct = async (req, res, next) => {
-    const { productId } = req.params
-    try {
-        await Product.findByIdAndUpdate(productId, req.body);
-        res.status(200).json({ success: true })
-    } catch (error) {
-        error.status = 400;
-        next(error)
-    }
+    
+    
 }
+
 
 
 exports.deleteProduct = async (req, res, next) => {

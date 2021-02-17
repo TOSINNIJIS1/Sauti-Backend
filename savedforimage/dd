@@ -1,0 +1,125 @@
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid')
+const Product = require('../model/productModel');
+const productController = require('../controller/products')
+const path = require('path')
+const DIR = '../public';
+
+// Storage
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, DIR));
+    },
+    filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, uuidv4() + new Date().toISOString().replace(/:/g, '-'))
+    }
+    });
+
+// Storage ends here
+
+
+// Multer Starts Here
+var upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+        }
+    }
+});
+// Multer Ends Here
+router.route('/').get(productController.getAllProducts);
+
+router.post('/', upload.single("image"), (req, res, next) => {
+    const url = req.protocol + '://' + req.get('host')
+    
+    const newProduct = new Product({
+        category: req.body.category,
+        item: req.body.item,
+        price: req.body.price,
+        location: req.body.location,
+        description: req.body.description,
+        image: url + '/public/' + req.file.filename
+    });
+
+    newProduct.createdBy = req.user.id;
+
+    newProduct.save().then(result => {
+        res.status(201).json({
+            message: "Product added successfully!",
+            productCreated: {
+            result: result
+            }
+        })
+    })
+    .catch((err) => {
+        console.log(err),
+        res.status(500).json({
+            error: err
+        })
+    })
+    
+})
+
+router.route('/:productId')
+    .get(productController.getProduct)
+    .put(productController.updateProduct)
+    .delete(productController.deleteProduct);
+
+module.exports = router; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// router.post("/update-profile/", upload.single('image'), async (req,res,next) => {
+//     var newId = req.body.id;
+
+//     console.log(newId)
+//     // let file = req.file.path
+//     // console.log(file)
+//     const profileImage = await cloudinary.uploader.upload(req.file.path)
+
+
+//     User.findByIdAndUpdate('60236eeafe495f2bd4f8a4ed', (err, data) =>  {
+//         console.log(newId, 'this is the id')
+//         console.log(data, 'data in line 63')
+
+//         data.image = profileImage.secure_url ? profileImage.secure_url : data.image;
+
+//         console.log(data.image, 'profile image')
+        
+//         data.save()
+//         .then(newData => {
+//             console.log(newData, 'this is newData in line 78')
+
+//             res.status(201).json({
+//                 message:"Profile Image Updated Successfully",
+//                 data: newData
+//             });
+//         })
+//         .catch(err=>{
+//             res.json(err);
+//         })
+//     });
+
+// })

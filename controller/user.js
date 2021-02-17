@@ -1,54 +1,77 @@
 const User = require('../model/userModel');
 const jwt = require('jsonwebtoken');
 const { SECRET_KEY } = require('../config/config')
+const bcrypt = require('bcryptjs')
+const mongoose = require('mongoose');
+// const Profile = require('../model/profileModel');
 
-exports.register = async (req, res, next) => {
-    const { fname, phone, email, password, location } = req.body;
-
-    const user = await User.findOne({ email }); 
-    if (user) 
-        return res.status(403).json({error: { message: "Email already in use!" }});
-    
-    const newUser = new User({ fname, phone, email, password, location});
+// GetAll user start here
+exports.allUser = async (req, res, next) => {
+    const user = await User.find()
 
     try {
-        await newUser.save();
-        const token = getSignedToken(newUser)
-        res.status(200).json({ token, newUser })
+        if (user) {
+            res.status(200).json(user)
+        } else if (!user) {
+            res.status(200).json({message})
+        }
+        
+
+    } catch (error) {
+        error.status = 400; 
+        next(error)
+    }
+}
+// GetAll ends here
+
+// GetUser by id start here
+exports.info = async (req, res, next) => {
+    const id = req.params.id;
+    console.log(id)
+
+    try {
+        const user = await User.findById(id)
+        res.status(200).json({ message: "Done", data : user })
     } catch(error) {
         error.status = 400
-        next(error);
+        next(error)
     }
-};
+}
+
+// GetUser ends here
 
 
 exports.login = async (req, res, next) => {
-    const { email, password } = req.body
+    const { email, password} = req.body
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, password });
 
     if (!user)
-        return res.status(403).json({error: { message: 'Invalid email/password' }})
+        return res.status(200).json({ message: 'Invalid email/password' })
 
-    const isValid = await user.isPasswordValid(password)
+    // const isValid = await user.isPasswordValid(password)
 
-    if (!isValid)
-        return res.status(403).json({error: { message: "Invalid email/password" }})
+    // if (!isValid)
+    //     return res.status(200).json({ message: "Invalid email/password" })
+    
+    
+    try {
+        const token = getSignedToken(user);
+        res.status(200).json({ token, user, message: "User Found" })
+    } catch(error) {
+        error.status = 400
+        next(error)
+    }
 
-    const token = getSignedToken(user);
-    res.status(200).json({ token, user })
+    
 
-};
-
-
-
+}
 
 getSignedToken = user => {
+    console.log(user)
     return jwt.sign({
-        id: user._id,
-        fname: user.fname,
-        phone: user.phone,
-        email: user.email,
-        location: user.location
-    }, SECRET_KEY, { expiresIn: "1h" })
+        id: user.id,
+        fname: user.fname
+    }, SECRET_KEY, { expiresIn: "99999h" })
 }
+
